@@ -1,7 +1,16 @@
 let days = [];
 let vacations = [];
 let actual = planned = 0;
+let hoursPerDay = 0;
 
+document.getElementById('hours_per_day').addEventListener('change', function(e){
+    if(e.target.value < 0){
+        e.target.value = null;
+    }
+    e.target.value = Math.floor(e.target.value);
+    hoursPerDay = e.target.value * 1;
+
+});
 document.getElementById('sheet').addEventListener('change', function (e) {
     if (!e.target.files || !e.target.files.length) {
         return;
@@ -64,7 +73,7 @@ document.getElementById('done').addEventListener('click', function (e) {
         let diffInMinutes = moment(checkOutDate).diff(checkInDate, 'minutes');
 
         if (!dayIsOff(day.date) && diffInMinutes > 0) {
-            planned += 8 * 60;
+            planned += hoursPerDay * 60;
         }
 
         if (diffInMinutes >= 0) {
