@@ -2,7 +2,6 @@ let days = [];
 let vacations = [];
 let actual = planned = 0;
 let hoursPerDay = 0;
-
 document.getElementById('hours_per_day').addEventListener('change', function(e){
     if(e.target.value < 0){
         e.target.value = null;
@@ -20,7 +19,6 @@ document.getElementById('sheet').addEventListener('change', function (e) {
     reader.onload = function (e) {
         let workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
         let values = workbook.Sheets[workbook.SheetNames[0]];
-
         for (let key in values) {
             let date;
             if (key.startsWith('C') && key != 'C1') {
@@ -28,6 +26,7 @@ document.getElementById('sheet').addEventListener('change', function (e) {
                     date: values[key].v
                 })
             }
+			
         }
         let counter = 0;
         for (let key in values) {
@@ -67,20 +66,21 @@ document.getElementById('done').addEventListener('click', function (e) {
         }
     });
     for (let day of days) {
+		if(!day.checkIn || !day.checkOut){
+			continue ;
+		}
         let checkInDate = moment(new Date(day.date + ' ' + day.checkIn));
         let checkOutDate = moment(new Date(day.date + ' ' + day.checkOut));
-
-        let diffInMinutes = moment(checkOutDate).diff(checkInDate, 'minutes');
-
+        let diffInMinutes = checkOutDate.diff(checkInDate,'minutes');
+	
         if (!dayIsOff(day.date) && diffInMinutes > 0) {
             planned += hoursPerDay * 60;
         }
-
+		
         if (diffInMinutes >= 0) {
             actual += diffInMinutes;
         }
     }
-    
     let plannedInterval = humanInterval(planned);
     let actualInterval = humanInterval(actual);
     let diffInterval = humanInterval(actual - planned);
